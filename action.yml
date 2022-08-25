@@ -27,9 +27,9 @@ runs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ github.ref_name == 'staging' && format("arn:aws:iam::973525173731:role/{0}", inputs.role-to-assume) || format("arn:aws:iam::117979148410:role/{0}", inputs.role-to-assume) }}
+        role-to-assume: ${{ github.ref_name == 'staging' && format('arn:aws:iam::973525173731:role/{0}', inputs.role-to-assume) || format('arn:aws:iam::117979148410:role/{0}', inputs.role-to-assume) }}
         role-session-name: ${{ inputs.role-to-assume }}
         aws-region: ${{ inputs.aws-region }}
     - name: Sync to S3
-      run: aws s3 sync ${{ inputs.build-folder-name }} ${{ github.ref_name == 'staging' && format("s3://{0}", inputs.staging-bucket-name) || format("s3://{0}", inputs.production-bucket-name) }} --acl public-read --delete
+      run: aws s3 sync ${{ inputs.build-folder-name }} ${{ github.ref_name == 'staging' && format('s3://{0}', inputs.staging-bucket-name) || format('s3://{0}', inputs.production-bucket-name) }} --acl public-read --delete
       shell: bash
