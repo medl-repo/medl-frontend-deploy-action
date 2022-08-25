@@ -1,9 +1,6 @@
 name: "Medl FrontEnd Deploy"
 description: "Deploys MedlFrontEnds to S3"
 inputs:
-  role-to-assume:
-    description: "IAM Role to Assume"
-    required: true
   aws-region:
     description: "AWS Region"
     required: false
@@ -27,7 +24,7 @@ runs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ github.ref_name == 'staging' && format('arn:aws:iam::973525173731:role/{0}', inputs.role-to-assume) || format('arn:aws:iam::117979148410:role/{0}', inputs.role-to-assume) }}
+        role-to-assume: ${{ github.ref_name == 'staging' && format('arn:aws:iam::973525173731:role/tf-frontend-{0}-role', github.event.repository.name) || format('arn:aws:iam::117979148410:role/tf-frontend-{0}-role', github.event.repository.name) }}
         role-session-name: ${{ inputs.role-to-assume }}
         aws-region: ${{ inputs.aws-region }}
     - name: Sync to S3
