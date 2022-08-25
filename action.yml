@@ -1,0 +1,35 @@
+name: "Medl FrontEnd Deploy"
+description: "Deploys MedlFrontEnds to S3"
+inputs:
+  role-to-assume:
+    description: "IAM Role to Assume"
+    required: true
+  aws-region:
+    description: "AWS Region"
+    required: false
+    default: us-east-1
+  staging-bucket-name:
+    required: true
+    description: "Name of the bucket"
+  production-bucket-name:
+    required: true
+    description: "Name of the bucket"
+  build-folder-name:
+    required: true
+    description: "Name of the Build Folder"
+outputs:
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-number }}
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ github.ref_name == 'staging' && format("arn:aws:iam::973525173731:role/{0}", inputs.role-to-assume) || format("arn:aws:iam::117979148410:role/{0}", inputs.role-to-assume) }}
+        role-session-name: ${{ inputs.role-to-assume }}
+        aws-region: ${{ inputs.aws-region }}
+    - name: Sync to S3
+      run: aws s3 sync ${{ inputs.build-folder-name }} ${{ github.ref_name == 'staging' && format("s3://{0}", inputs.staging-bucket-name) || format("s3://{0}", inputs.production-bucket-name) }} --acl public-read --delete
+      shell: bash
