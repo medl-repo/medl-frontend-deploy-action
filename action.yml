@@ -18,9 +18,9 @@ inputs:
     required: true
     description: "Name of the Build Folder"
 outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
+  nothing:
+    description: "Just a simple string"
+    value: "Pushed"
 runs:
   using: "composite"
   steps:
