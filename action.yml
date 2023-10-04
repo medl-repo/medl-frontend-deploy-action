@@ -8,6 +8,9 @@ inputs:
   staging-bucket-name:
     required: true
     description: "Name of the bucket"
+  sandbox-bucket-name:
+    required: true
+    description: "Name of the bucket"
   production-bucket-name:
     required: true
     description: "Name of the bucket"
@@ -24,9 +27,9 @@ runs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ github.ref_name == 'staging' && format('arn:aws:iam::973525173731:role/tf-frontend-{0}-role', github.event.repository.name) || format('arn:aws:iam::117979148410:role/tf-frontend-{0}-role', github.event.repository.name) }}
+        role-to-assume: ${{ github.ref_name == 'staging' && format('arn:aws:iam::973525173731:role/tf-frontend-{0}-role', github.event.repository.name) || github.ref_name == 'sandbox' && format('arn:aws:iam::823876827192:role/tf-frontend-{0}-role', github.event.repository.name) || format('arn:aws:iam::117979148410:role/tf-frontend-{0}-role', github.event.repository.name) }}
         role-session-name: ${{ inputs.role-to-assume }}
         aws-region: ${{ inputs.aws-region }}
     - name: Sync to S3
-      run: aws s3 sync ${{ inputs.build-folder-name }} ${{ github.ref_name == 'staging' && format('s3://{0}', inputs.staging-bucket-name) || format('s3://{0}', inputs.production-bucket-name) }} --acl public-read --delete
+      run: aws s3 sync ${{ inputs.build-folder-name }} ${{ github.ref_name == 'staging' && format('s3://{0}', inputs.staging-bucket-name) || github.ref_name == 'sandbox' && format('s3://{0}', inputs.sandbox-bucket-name) || format('s3://{0}', inputs.production-bucket-name) }} --acl public-read --delete
       shell: bash
