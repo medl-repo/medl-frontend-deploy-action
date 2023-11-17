@@ -5,15 +5,6 @@ inputs:
     description: "AWS Region"
     required: false
     default: us-east-1
-  staging-bucket-name:
-    required: true
-    description: "Name of the bucket"
-  sandbox-bucket-name:
-    required: true
-    description: "Name of the bucket"
-  production-bucket-name:
-    required: true
-    description: "Name of the bucket"
   build-folder-name:
     required: true
     description: "Name of the Build Folder"
@@ -31,5 +22,5 @@ runs:
         role-session-name: ${{ inputs.role-to-assume }}
         aws-region: ${{ inputs.aws-region }}
     - name: Sync to S3
-      run: aws s3 sync ${{ inputs.build-folder-name }} ${{ github.ref_name == 'staging' && format('s3://{0}', inputs.staging-bucket-name) || github.ref_name == 'sandbox' && format('s3://{0}', inputs.sandbox-bucket-name) || format('s3://{0}', inputs.production-bucket-name) }} --acl public-read --delete
+      run: aws s3 sync ${{ inputs.build-folder-name }} ${{ github.ref_name == 'staging' && format('s3://{0}.staging.medl.me', github.event.repository.name) || github.ref_name == 'sandbox' && format('s3://{0}.sandbox.medl.me', github.event.repository.name) || format('s3://{0}.production.medl.me', github.event.repository.name) }} --acl public-read --delete
       shell: bash
